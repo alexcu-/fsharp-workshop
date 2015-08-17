@@ -12,7 +12,7 @@ let a = 1
 // functions are first class values in F# so
 // the syntax is identical to the above except that
 // it has a parameter
-let increment a = failwith "todo"
+let increment a = a + 1
 
 // notice that there no brackets when calling
 // the increment function. calling a function
@@ -41,7 +41,7 @@ let increment'' = fun a -> a + 1
 let increment''' : int -> int = fun a -> a + 1
 
 // add is a function of two parameters
-let add a b = failwith "todo"
+let add a b = a + b
 
 Examples.test "Can add two numbers" (fun () ->
   add 1 2 = 3
@@ -60,8 +60,8 @@ let increment'''' : int -> int = add 1
 
 // passing functions as arguments to other functions
 // is a really powerful technique. This is a silly example.
-let applyFunctionThenAdd2 f n =
-    failwith "todo"
+let applyFunctionThenAdd2 f n = 
+    f n + 2
 
 Examples.test "Multiply by two then add two" (fun () ->
     applyFunctionThenAdd2 (fun x -> x * 2) 10 = 22
@@ -72,16 +72,20 @@ Examples.test "Multiply by two then add two" (fun () ->
 // we could do it like:
 let examplePipe n =
     n
-    |> add 10
-    |> increment
-    |> add 20
+    |> add 10      (* n is piped into here as add 10 n        *)
+    |> increment   (* output of above is piped into increment *)
+    |> add 20      (* output of increment is piped to add 20  *)
 
 // the previous value is passed as the last argument to the next
 // function.
 // implement this example using the pipe operator
 // add 40 (add 20 (increment n))
 let examplePipe2 n =
-    failwith "todo"
+    n
+    |> increment
+    |> add 20
+    |> add 40
+
 
 Examples.test "add 40 (add 20 (increment n))" (fun () ->
     examplePipe2 1 = 62
@@ -89,7 +93,7 @@ Examples.test "add 40 (add 20 (increment n))" (fun () ->
 
 // the pipe operator has a very simple implementation
 // try implementing ||> to do the same things as pipe
-let (||>) x f = failwith "todo"
+let (||>) x f = f x
 
 Examples.test "Custom pipe" (fun () -> 
     10
@@ -106,14 +110,19 @@ let outerFunction n =
 // functions can be called recursively with the rec keyword
 // this is also the first time we've seen an if expression
 // note that each path returns a value
-let rec factorial n =
+let red factorial n =
     if n = 1 then
         1
     else
         n * factorial (n - 1)
 
 let rec addFrom1To n =
-    failwith "todo"
+    if n = 0 then    (* Nothing yet?  *)
+        1            (* 1 is returned as we add 1*)
+    else
+        (* n is n + result of addFrom1To and n - 1 as the param subtracts 1 *)
+        n + addFrom1To (n - 1)
+                    
 
 Examples.test "addFrom1To 10 equals 55" (fun () ->
     addFrom1To 10 = 55
