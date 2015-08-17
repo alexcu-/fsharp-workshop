@@ -272,3 +272,81 @@ Now we can use decomposing to pluck out the `true` and `1234` or `false` and `0`
 
 val didItParse : bool = false
 ```
+
+## Records
+
+- Like tuples but with named fields
+- Essentially, structs
+- Records are composable; can have a record in a record
+- Records are **immutable**
+
+Use the keyword `type` to create a new Record type
+
+```
+type Coord2d = { x : float; y : float }
+let vect1    = { x = 3.5  ; y = 5.6   }
+```
+
+We create **values** (not *instances*) of `Coord2d`. The type inference will match `vect1` with `Coord2d`. The inference engine will use the most recent definition of the Record, so if we duplicated `Coord2d` to `Vector` just underneath `Coord2d`, then `Vector` would be matched instead.
+
+```
+type Player = { name: string;    coordinates: Coord2d   }
+let someone = { name = "Freddy"; coordinates = vect1    }
+```
+
+### Pseudo-mutability with `with` keyword
+
+Remember, it's not mutable. So, we take an existing value and create a new one to, say, move `someone` somewhere else:
+
+```
+let someoneMoved = { someone with coordinates = { x = 0.0; y = 0.0 } }
+```
+
+We can use a new line instead of a semicolon:
+
+```
+let vect2 = { vect1 with 
+                        x = 0.0
+                        y = 0.0 }
+```
+
+If we want to reference out own value that we're 'mutating', we can do that too:
+
+```
+let someoneMoved = { someone with coordinates = { x = coordinates.x + 1; y = 0.0 } }
+```
+
+### Deconstructing Records
+
+We can deconstruct records too, just like tuples:
+
+```
+let someonesCoordinates = someone.coordinates;
+```
+
+### Equality Checks
+
+Records have **structural equality** semantic. Compared on the values. Unlike F# classes, which is **referenced equality**, compared instances on the references in memory.
+
+```
+type Coord2dClass(x : float, y : float) = class
+    member m.X = x
+    member m.Y = y
+end
+
+let v1 = new Coord2dClass(5.0, 5.0)
+let v2 = new Coord2dClass(5.0, 5.0)
+
+v1 = v2   (* val it : bool = false *)
+```
+
+vs
+
+```
+let v1 = { x = 5.0; y = 5.0 }
+let v2 = { x = 5.0; y = 5.0 }
+
+v1 = v2   (* val it : bool = true *)
+```
+
+We only really use classes for C# interoperability—you don't *usually* use classes.

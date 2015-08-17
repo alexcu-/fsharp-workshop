@@ -33,6 +33,8 @@ let vect1 = { x = 3.5; y = 5.6 }
 //   Create a new value called player with name and location.
 //
 
+type Player = { name: string;    coordinates: Coord2d   }
+let someone = { name = "Freddy"; coordinates = vect1    }
 
 //
 // By default records are immutable, so how
@@ -40,12 +42,15 @@ let vect1 = { x = 3.5; y = 5.6 }
 //
 // Example: The 'with' keyword.
 //
-let vect2 = { vect1 with x = 0.0 }
+let vect2 = { vect1 with 
+                        x = 0.0
+                        y = 0.0 }
 
 //
 // Exercise 2: Create a new player value with a new location at 0,0 from the value player1
 //
 
+let someoneMoved = { someone with coordinates = { x = 0.0; y = 0.0 } }
 
 //
 // Exercise 3: Just like tuples, recrods can be deconstructed (pattern matched).
@@ -53,7 +58,7 @@ let vect2 = { vect1 with x = 0.0 }
 //   (Hint: look at the tuple destructuring exercise)
 //
 
-
+let { x = pcx; y = pcy } = someone.coordinates
 
 //
 // An important difference between Records and Classes:
@@ -80,4 +85,5 @@ vect3 = vect4
 //   Now test the equality of the two values.
 //
 
- 
+let vect1' = vect1
+vect1' = vect1
