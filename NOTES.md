@@ -350,3 +350,121 @@ v1 = v2   (* val it : bool = true *)
 ```
 
 We only really use classes for C# interoperability—you don't *usually* use classes.
+
+## Discriminated Unions (DU)
+
+- A bit like `enum`s but a whole lot more powerful
+
+```
+type Colour =
+  | Red
+  | Blue
+  | Yellow
+```
+
+Each type labels/case constructor (Red, Blue, Yellow) of the type Color. We can't create Color, we can only use Red/Blue/Yellow.
+
+```
+let stopSign = Red
+```
+
+This means `stopSign` is not of type `Red`, but of type `Color` constructed with `Red`.
+
+### Pattern match expression
+
+Use the `match` keyword to match a DU with its type labels.
+
+```
+let describeColour c =
+  match c with
+  | Blue   -> "It's blue"
+  | Red    -> "It's red"
+  | Yellow -> "It's yellow"
+```
+
+Similar to conditional branching, every match but be of the same type. 
+
+Inference is done top-to-bottom, as is evaluation.
+
+```
+let describeColour c =
+  match c with
+  | Blue   -> "It's blue"
+  | Blue   -> "IT IS BLUE"
+  | Red    -> "It's red"
+  | Yellow -> "It's yellow"
+```
+
+The match `"IT IS BLUE"` won't be ever be used, since evaluation is done top down (the lowercase one will be used instead).
+
+We can also remove the `match c with` by using the lambda `function` keyword instead:
+
+```
+let describeColour' = function
+  | Blue   -> "It's blue"
+  | Red    -> "It's red"
+  | Yellow -> "It's yellow"
+```
+
+This will lead to anonymous arguments being used:
+
+```
+val describeColour' : _arg1:Colour -> string
+```
+
+Remember, F# only takes one argument, which is why we have `_arg1`.
+
+Lambda `function` is just a _syntax shortcut_ for `match`.
+
+### Data in DUs
+
+Each of our cases can take data along with the case name.
+
+```
+type ContactDetails =
+  | Email of string
+  | Phone of int
+```
+
+We would use a Record or Tuple if we wanted **both** the `Email` and `Phone`. But here, we just one one **or** the other.
+
+Hence:
+
+```
+type Person = { Name : string; ContactDetails : ContactDetails }
+```
+
+A person's contact details could be `Email` or `Phone`, but not both.
+
+To create a DU with data, it's similar syntax to a function call:
+
+```
+let jim  = { Name = "Jim";  ContactDetails = Email "jim@example.org" }
+let tess = { Name = "Tess"; ContactDetails = Phone 0411222333 }
+```
+
+### Equality
+
+Like Records, we have value equality for DUs and not reference equality.
+
+### Optional DUs with no associated data
+
+Our system now supports `Nothing` for no contact details. This type case has **no data** associated to it.
+
+```
+type ContactDetails =
+  | Email of string
+  | Phone of int
+  | Nothing
+```
+
+Now we can print using `_` if there is no associated data (like a default) in a pipeline provided we pass in a ContactDetails:
+
+```
+let printContactDetails = function
+  | Email e -> sprintf "email address - %s" e
+  | Phone p -> sprintf "phone number - %010d" p
+  | Nothing ->         "no contact details found"
+```
+
+We can't do `null` since that would be a pointer, but this is value-based semantics.

@@ -25,7 +25,7 @@ let stopSign = Red
 let describeColour c =
   match c with
   | Blue   -> "It's blue"
-  | Red    -> failwith "todo"
+  | Red    -> "It's red"
   | Yellow -> "It's yellow"
 
 test "Describing colours" (fun _ ->
@@ -39,7 +39,7 @@ test "Describing colours" (fun _ ->
 
 let describeColour' = function
   | Blue   -> "It's blue"
-  | Red    -> failwith "todo"
+  | Red    -> "It's red"
   | Yellow -> "It's yellow"
 
 // The second version of describeColour is exactly the same
@@ -92,11 +92,11 @@ let printContactDetails = function
   | Phone p -> sprintf "phone number - %010d" p
 
 test "Printing contact details" (fun _ ->
-  printContactDetails jim.ContactDetails = failwith "todo"
+  printContactDetails jim.ContactDetails = "email address - jim@example.org"
 )
 
 test "Printing contact details #2" (fun _ ->
-  printContactDetails tess.ContactDetails = failwith "todo"
+  printContactDetails tess.ContactDetails = "phone number - 0411222333"
 )
 
 // A nice feature of DUs and Records in F# is that we get structural equality
@@ -104,12 +104,12 @@ test "Printing contact details #2" (fun _ ->
 
 test "Are Jim and Tess the same?" (fun _ ->
   let areEqual = jim = tess
-  areEqual = failwith "todo"
+  areEqual = false
 )
 
 test "Can we compare Jim to himself?" (fun _ ->
   let areEqual = jim = { Name = "Jim"; ContactDetails = Email "jim@example.org"}
-  areEqual = failwith "todo"
+  areEqual = true
 )
 
 let phone1 = Phone 91234567
@@ -118,12 +118,12 @@ let phone3 = Phone 91234567
 
 test "Compare phone1 and phone2" (fun _ ->
   let areEqual = phone1 = phone2
-  areEqual = failwith "todo"
+  areEqual = false
 )
 
 test "Compare phone1 and phone3" (fun _ ->
   let areEqual = phone1 = phone3
-  areEqual = failwith "todo"
+  areEqual = true
 )
 
 // So we can see that the values are equal if they are of the same case
