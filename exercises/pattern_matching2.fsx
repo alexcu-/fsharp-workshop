@@ -30,8 +30,12 @@ let first15 = [
 // See if you can write the body for the function 'fizzbuzz' below
 // to pass the following test, using guard clauses.
 
-let fizzbuzz n =
-  string n
+let fizzbuzz n = 
+  match n with
+  | n when n % 3 = 0 && n % 5 = 0 -> "FizzBuzz"
+  | n when n % 3 = 0              -> "Fizz"
+  | n when n % 5 = 0              -> "Buzz"
+  | n                             -> sprintf "%d" n
 
 test "We can fizz buzz 1" (fun _ ->
   let result = [1 .. 15] |> List.map fizzbuzz

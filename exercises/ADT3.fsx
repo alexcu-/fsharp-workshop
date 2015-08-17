@@ -31,7 +31,8 @@ let tess = { Name = "Tess"; ContactDetails = Details (Phone 0411222333) }
 // You might find it handy to re-use our function from earlier.
 
 let printContactDetails = function
-  | _ -> failwith "todo"
+  | Email e -> sprintf "email address - %s" e
+  | Phone p -> sprintf "phone number - %010d" p
 
 // And we can write an outer function to handle the overall task of printing out a
 // person's contact details. We have to provide a type hint for our person variable
@@ -39,8 +40,12 @@ let printContactDetails = function
 // Remember to be careful with your indentation inside the branches of the match
 // expression.
 
-let howToContact (person : Person) =
-  failwith "todo"
+let howToContact (person : Person) = 
+    let checkPrint =
+        match person.ContactDetails with
+        | Details d -> sprintf "can be contacted on %s" (printContactDetails d)
+        | Nothing   -> "does not wish to be contacted"
+    sprintf "%s %s" person.Name checkPrint
 
 test "How to contact Jim" (fun _ ->
   howToContact jim = "Jim can be contacted on email address - jim@example.org"

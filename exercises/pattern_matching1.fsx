@@ -11,7 +11,12 @@ open Examples
 // or negative, using if, elif and else.
 
 let partition n =
-  "todo"
+  if n > 0 then
+    "positive"
+  elif n < 0 then
+    "negative"
+  else
+    "zero"
 
 test "partitioning numbers 1" (fun _ ->
   partition 1 = "positive"
@@ -33,8 +38,8 @@ test "partitioning numbers 3" (fun _ ->
 let partition' n =
   match n with
   | x when x < 0 -> "negative"
-  // TODO
-  | _            -> "todo"
+  | x when x > 0 -> "positive"
+  | _            -> "zero"
 
 // I hope you agree that's a whole lot more readable. The last line with
 // the underscore is a wildcard match, it will match anything and discard
@@ -60,8 +65,8 @@ test "partitioning numbers 6" (fun _ ->
 
 //////////////////// Matching tuples ////////////////////
 
-let thirdElementIsEven n =
-  false
+let thirdElementIsEven (_, _, n) = 
+    n % 2 = 0
 
 test "pattern matching into tuples 1" (fun _ ->
   thirdElementIsEven ("a", 14.3, 2)
@@ -78,24 +83,47 @@ test "pattern matching into tuples 2" (fun _ ->
 // calculated at $0.01/g. In addition, items that are taller than 50cm incur an
 // additional charge of $5.
 
+(* x and y doesn't matter, hence the decimal * decimal tuple base *)
 type DimensionsInMetres  = { Height : decimal; Base : decimal * decimal }
 type PostageSatchel = { Dimensions: DimensionsInMetres ; MassInGrams : decimal }
 
-type PostagePrice = | Dollars of decimal
-type PostageError = | TooBig | TooHeavy
+type PostagePrice = 
+    | Dollars of decimal
+type PostageError = 
+    | TooBig 
+    | TooHeavy
 
+(* Takes a PostageSatchel and returns a choice between a Price or Error *)
+(* A choice is one or the other, but not nothing *)
 type PostagePriceCalculator = PostageSatchel -> Choice<PostagePrice, PostageError>
 
 // Feel free to remove any of the partial implementation below when completing your
 // calculatePostage function, but you may find these pieces useful.
 
 let calculatePostage satchel =
+  // Define our boundary values
   let costPerGram = 0.01M
   let maximumSizeInMetres = 0.9M
   let maximumMassInGrams = 2000M
+  let chargeExtraHeight = 0.5M
+  let chargeExtraPrice = 5M
 
+  // Define the checks
+  let tooBig (dimensions: DimensionsInMetres) =
+      let (b, w), h = dimensions.Base, dimensions.Height
+      b > maximumSizeInMetres || w > maximumSizeInMetres || h > maximumSizeInMetres
+  let chargeExtra (dimensions: DimensionsInMetres) =
+      dimensions.Height > chargeExtraHeight
+  let tooHeavy (mass: decimal) =
+      mass > maximumMassInGrams
+  
+  // Now finally check our checks
   match satchel with
-  | { MassInGrams = m } -> m |> Dollars |> Choice1Of2
+  | { Dimensions  = d } when d |> tooBig       -> TooBig   |> Choice2Of2
+  | { MassInGrams = m } when m |> tooHeavy     -> TooHeavy |> Choice2Of2
+  | { Dimensions  = d
+      MassInGrams = m } when d |> chargeExtra  -> m * costPerGram + chargeExtraPrice |> Dollars |> Choice1Of2    
+  | { MassInGrams = m }                        -> m * costPerGram                    |> Dollars |> Choice1Of2
 
 test "Calculating postage 1" (fun _ ->
   { Dimensions = { Height = 0.12M; Base = 0.1M, 0.1M }; MassInGrams = 700M }

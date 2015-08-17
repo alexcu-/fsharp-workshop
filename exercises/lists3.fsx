@@ -39,15 +39,18 @@ open Examples
 |> List.fold (fun state x -> sprintf "%s %d" state x) "Numbers:"
 
 // sum the all the numbers divisible by three and five from 1 to 100
-let sum35 () = failwith "todo"
+let sum35 () = [ 1 .. 100 ] |> List.filter (fun x -> x % 3 = 0 && x % 5 = 0) |> List.sum
 
 test "Sum the all the numbers divisible by three and five from 1 to 100" (fun () ->
-  sum35  () = 315
+  sum35() = 315
 )
 
 // Write a function that calculates the numbers divisible by three and five from 1 to 100 and outputs as a
 // comma separated list.
-let print35 () = failwith "todo"
+let print35 () = 
+    [ 1 .. 100 ] 
+    |> List.filter (fun x -> x % 3 = 0 && x % 5 = 0)
+    |> List.fold   (fun state x -> sprintf "%s, %d" state x) sprintf "%d" (n :: xs)
 
 test "Numbers divisible by three and five as a comma separated list" (fun () ->
   print35 () = "15, 30, 45, 60, 75, 90"

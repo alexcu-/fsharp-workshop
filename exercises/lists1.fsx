@@ -37,7 +37,7 @@ let alphaRange    = [ 'a' .. 'z' ]
 
 let floatRange    = [ 0.1 .. 0.1 .. 1.0 ]
 
-let downRange     = [ 10 .. (-1) .. 1 ]
+let downRange     = [ 10 .. -1 .. 1 ]
 
 
 (*********************************************************************************************************************)
@@ -48,7 +48,7 @@ let appendedList  = [ 1; 2; 3 ] @ [ 4; 5; 6 ]
 
 //  Write a list comprehension that produces the numbers one to ten followed by ten down to one.
 
-let tenTo10 () = failwith "todo"
+let tenTo10 () = [ 1 .. 10 ] @ [ 10 .. -1 .. 1 ]
 
 test "Write a list comprehension that produces the numbers one to ten followed by ten down to one" (fun () ->
   tenTo10 () = [1; 2; 3; 4; 5; 6; 7; 8; 9; 10; 10; 9; 8; 7; 6; 5; 4; 3; 2; 1]
@@ -65,7 +65,7 @@ let forLoopDown       = [ for i in 10 .. (-1) .. 1 -> i + 1 ]
 
 // Write a list comprehension that produces the square of every third number starting from 1 to 20
 
-let thirdSquares () = failwith "todo"
+let thirdSquares () = [ for i in 1 .. 3 .. 20 -> i * i ]
 
 test "Write a list comprehension that produces every third square of the numbers 1 to 20" (fun () ->
   thirdSquares () = [1; 16; 49; 100; 169; 256; 361]
@@ -90,7 +90,11 @@ let twoForsWithYield = [
 
 // Write a list comprehension that produces the square of every fourth and fifth between 1 to 20.
 
-let fourthFifthSquares () = failwith "todo"
+let fourthFifthSquares () = [
+    for i in 1 .. 20 do
+        if (i % 4 = 0 || i % 5 = 0) then 
+            yield i * i
+]
 
 test "Write a list comprehension that produces the square of every fourth and fifth between 1 to 20" (fun () ->
   fourthFifthSquares () = [16; 25; 64; 100; 144; 225; 256; 400]

@@ -468,3 +468,278 @@ let printContactDetails = function
 ```
 
 We can't do `null` since that would be a pointer, but this is value-based semantics.
+
+### Nested case constructor
+
+Assume we broke out the `Nothing` into:
+
+```
+type ContactDetails =
+  | Email of string
+  | Phone of int
+
+type MaybeContactDetails =
+  | Nothing
+  | Details of ContactDetails
+```
+
+This would mean we can construct these types either as:
+
+```
+(* Idiomatic approach *)
+let contactDetails = Email "jim@example.org" |> Details
+
+(* Not so idiomatic approach but still okay *)
+let contactDetails = Details (Phone 0411222333)
+
+(* Nothing! *)
+let contactDetails = Nothing
+```
+
+This is because we're wrapping `Details`.
+
+#### Deconstructed Pattern Matching
+
+We can now **deconstruct** on pattern matching and go as deep into the structure as possible:
+
+```
+let howToContact (person : Person) =
+	(* Contact match intermediate using deep matching *)
+	let contactMatch =
+		match person.ContactDetails with
+		  | Details (Email e) -> sprintf "email address - %s" e
+		  | Details (Phone p) -> sprintf "phone number - %010d" p
+		  | Nothing           -> "does not want to be contacted"
+	sprintf "%s %s" person.Name contactMatch
+```
+
+## Optionals
+
+The option type is defined like this (the `'a` is a type parameter)
+
+```
+type Option<'a> =
+    | None
+    | Some of 'a
+ ```
+ 
+Now all we do when we define our fields, we append `option` keyword:
+ 
+``` 
+type ContactDetails =
+  | Email of string
+  | Phone of int
+
+type Person = { Name : string; ContactDetails : ContactDetails option }
+```
+
+Thus, we use an idiomatic nested case constructor and pass it into `Some` or `None`:
+
+```
+(* Essentially Nothing *)
+let contactDetails = None
+
+(* Email with Some *)
+let contactDetails = Email "jim@example.org" |> Some
+
+(* Phone with Some *)
+let contactDetails = Phone 0411222333 |> Some
+```
+
+## Guard clauses
+
+Attaches a predicate to the end of a pattern match.
+
+Cannot change the binding, only matches more restively and less often.
+
+Use the `when` keyword in a pattern match will apply the pattern only when the `when` predicate is true:
+
+```
+let partition' n =
+  match n with
+  | x when x < 0 -> "negative"
+  | x when x > 0 -> "positive"
+  | _            -> "zero"
+```
+
+It's a trade-off to use guard clauses—you have to use an exhaustive `_` wildcard *without* a guard.
+
+## Pattern matching in arguments
+
+You can just elevate pattern matches in the argument:
+
+```
+let thirdElementIsEven (_, _, n) = 
+    n % 2 = 0
+```
+
+This will let the inference engine to do the matching for you.
+
+## `choice`
+
+A choice is one or the other, but not nothing
+
+A reusable union type
+
+```
+type Choice<'a, 'b> = 
+  | Choice1Of2 of 'a
+  | Choice2Of2 of 'b
+```
+e.g.:
+
+```
+type PostagePrice = 
+    | Dollars of decimal
+type PostageError = 
+    | TooBig 
+    | TooHeavy
+
+(* Takes a PostageSatchel and returns a choice between a Price or Error *)
+type PostagePriceCalculator = 
+	PostageSatchel -> Choice<PostagePrice, PostageError>
+ Choice1Of2 (Dollars 12M)
+```
+
+and use it like:
+
+```
+10M      |> Dollars |> Choice 1Of1 (* $10 as Choice1      *)
+TooBig   |> Choice2Of2             (* TooBig as Choice2   *)
+TooHeavy |> Choice2Of2             (* TooHeavy as Choice2 *)
+```
+
+## Lists
+
+In F#, a list is a set of tuples, `[H|Tail]`, where `H` is `'T` and `Tail`. The tail is a second set of Tuples and so on an so forth, that is:
+
+```
+(1 (2, (3, 4))) etc.
+```
+
+or as per the F# definition:
+
+```
+type List<'T> =
+ (* Empty list *)
+ | ([]) of List<'T>
+ (* A list is a tuple *)
+ | (::) of Head: 'T * Tail: List<'T>
+```
+
+### List definition types
+
+- **empty**: `[]`
+- **cons**: `1 :: 2 :: 3 :: 4 :: []` (end the list with an empty list)
+- **explicit**: `[ 1; 2; 3; 4 ]` (remember a `;` can be substituted with a newline)
+- **ranges**: `[ 1 .. 100 ]`
+- **ranges with +ve steps**: `[ 0 .. 2 .. 10 ]`, even numbers 0 to 10
+- **ranges with -ve steps**: `[ 10 .. -2 .. 0 ]`, even numbers 10 to 0
+
+### List comprehensions
+
+#### Concatenation
+
+Concatenate a list using `@`
+
+```
+let appendedList  = [ 1; 2; 3 ] @ [ 4; 5; 6 ]
+```
+
+#### Iteration
+
+To for loop
+
+```
+[ for i in 1 .. 10 -> somethingThatUses i ]
+
+or
+
+[
+	for i in 1 .. 10 do
+	  yield somethingThatUses i
+]
+```
+
+Down for loop
+
+```
+[ for i in 10 .. -1 .. 1 -> somethingThatUses i ]
+
+or
+
+[
+	for i in 10 .. -1 .. 1 do
+	  yield somethingThatUses i
+]
+```
+
+#### Splitting a list
+
+```
+x :: _                (* head of list *)
+_ :: x                (* tail of list *)
+_ :: _ :: _ :: x :: _ (* fourth item in list *)
+```
+
+#### Useful List Functions
+
+##### Map 
+
+```
+[ 1 .. 10 ] |> List.map (fun x -> x * x)
+```
+
+##### Filter 
+
+```
+[ 1 .. 10 ] |> List.filter (fun x -> x % 2 = 0)
+```
+
+##### Sum 
+
+```
+[ 1 .. 10 ] |> List.sum
+```
+
+##### Length 
+
+```
+[ 1 .. 10 ] |> List.length
+```
+
+##### Reverse 
+
+```
+[ 1 .. 10 ] |> List.reverse
+```
+
+##### Reduce
+
+Will successively apply a function to each item in the list
+
+```
+> [ 1 .. 10 ] |> List.reduce (fun acc x -> acc + x);;
+
+val it : int = 55
+```
+
+##### Fold
+
+Similar to reduce, but will apply a function to each item in the list, however it starts off with an initial value that is passed in and does not have to be of the same type as the list. 
+
+Here we can see that it's returning a string from a list of numbers...
+
+```
+> [ 1 .. 10 ] |> List.fold (fun state x -> sprintf "%s %d" state x) "Numbers:";;
+
+val it : string = "Numbers: 1 2 3 4 5 6 7 8 9 10"
+```
+
+#### List conversions
+
+List of int to strings:
+
+```
+[ 1 .. 100 ] |> List.map string
+```

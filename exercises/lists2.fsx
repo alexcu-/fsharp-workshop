@@ -34,7 +34,10 @@ let isLast =
 // Using only a match expression, return the fourth item from the Fibonacci sequence (use fib25)
 
 // fourthFib: () -> int option
-let fourthFib () = failwith "todo"
+let fourthFib () =
+    match fibonacci with
+    | _ :: _ :: _ :: x :: _ -> Some x
+    | _                     -> None
 
 test "Return the fourth item in the Fibonacci sequence" (fun () ->
   match fourthFib () with
