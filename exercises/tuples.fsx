@@ -53,6 +53,9 @@ let x, y = vect1
 //
 // Now write a let expression to deconstruct the box and fileSize tuples.
 //
+let l, w, h = box
+let fileName, size = fileSize
+
 
 //
 // Optional Exercise: Ignoring values
@@ -60,14 +63,20 @@ let x, y = vect1
 // Deconstrcut the fileSize tuple to get the file name and ignore the length
 //
 
+let fileName', _ = fileSize
 
 //
 // Exercise 3:
 //   Write a function to add two vectors.
 //   (hint: watch the types)
 //
+let addVectors ((v1x, v1y) : (float * float)) ((v2x, v2y) : (float * float)) = 
+    (v1x + v2x, v1y + v2y)
 
 //
 // Exercise 4: Look at the type signature of System.Int32.TryParse.
 //   Use the REPL or hover over it in the IDE text editor.
 //
+let parsed = System.Int32.TryParse "1234"
+
+let didItParse, _ = parsed

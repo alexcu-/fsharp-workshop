@@ -188,7 +188,7 @@ Inner functions hide their scope from outer functions
 
 ### Recursion
 
-If you want to do recursion, by using `rec` keyword.
+If you want to do easy recursion, by using `rec` keyword.
 
 If the last thing in your recursive function calls the recursive function itself, then the compiler will optimise it. You **will not build up the stack** by doing this because F# will handle it.
 
@@ -218,3 +218,57 @@ else
 
 isn't.
 
+## Tuples
+
+- Tuples are a comma separated collection of values.
+- Useful for passing stuff around
+
+The signature of tuples are inferred with `*`, not a `->` like functions:
+
+```
+val vect1 : float * float = (5.0, 14.5)
+val fileSize : string * int = ("/var/log/err.log", 452264)
+```
+
+### Decomposing / pattern matching
+
+We can break down tuples into different labels:
+
+```
+> let fileSize   = ("/var/log/err.log", 452264);;
+
+val fileSize : string * int = ("/var/log/err.log", 452264)
+
+> let file, size = fileSize;;
+
+val size : int = 452264
+val fileName : string = "/var/log/err.log"
+```
+
+Don't care about the size of that file? Use an `_` to ignore it when decomposing:
+
+```
+> let fileName', _ = fileSize;;
+
+val fileName' : string = "/var/log/err.log"
+```
+
+Tuples used for C# `out` references (to avoid state change):
+
+```
+> let parsed = System.Int32.TryParse "1234";;
+
+val parsed : bool * int = (true, 1234)
+
+> let parsed = System.Int32.TryParse "banana";;
+
+val parsed : bool * int = (false, 0)
+```
+
+Now we can use decomposing to pluck out the `true` and `1234` or `false` and `0` in either case:
+
+```
+> let didItParse, _ = parsed
+
+val didItParse : bool = false
+```
