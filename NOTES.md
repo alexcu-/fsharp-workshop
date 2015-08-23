@@ -743,3 +743,7 @@ List of int to strings:
 ```
 [ 1 .. 100 ] |> List.map string
 ```
+
+## Extra notes
+
+- [Suave](http://suave.io) is a good web framework for F#

@@ -50,7 +50,8 @@ test "Sum the all the numbers divisible by three and five from 1 to 100" (fun ()
 let print35 () = 
     [ 1 .. 100 ] 
     |> List.filter (fun x -> x % 3 = 0 && x % 5 = 0)
-    |> List.fold   (fun state x -> sprintf "%s, %d" state x) sprintf "%d" (n :: xs)
+    |> List.map    string
+    |> List.reduce (fun acc x -> sprintf "%s, %s" acc x)
 
 test "Numbers divisible by three and five as a comma separated list" (fun () ->
   print35 () = "15, 30, 45, 60, 75, 90"
@@ -62,7 +63,8 @@ test "Numbers divisible by three and five as a comma separated list" (fun () ->
 // Now let's see if we can write a function that can take a list of numbers and split them into a tuple of two
 // lists of even numbers and odd numbers (this is essentially what List.partition does - but you get to implement it
 // this time!)
-let evenOdds numbers = failwith "todo"
+let evenOdds numbers =
+    (numbers |> List.filter (fun x -> x % 2 = 0), numbers |> List.filter (fun x -> x % 2 > 0))
 
 test "Split a list of numbers into a tuple of even numbers and odd numbers" (fun () ->
   [ 23 .. 37 ]
